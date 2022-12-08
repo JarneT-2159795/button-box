@@ -1,32 +1,43 @@
-keyboard.startKeyboardService()
-basic.forever(function () {
-    if (pins.digitalReadPin(DigitalPin.P8) == 0) {
+function joystick () {
+    if (pins.analogReadPin(AnalogPin.P0) < 100) {
+        keyboard.sendString("l")
+    }
+    if (pins.analogReadPin(AnalogPin.P0) > 950) {
+        keyboard.sendString("r")
+    }
+    if (pins.analogReadPin(AnalogPin.P1) < 100) {
+        keyboard.sendString("u")
+    }
+    if (pins.analogReadPin(AnalogPin.P1) > 950) {
+        keyboard.sendString("d")
+    }
+    if (pins.digitalReadPin(DigitalPin.P5) == 0) {
+        keyboard.sendString("j")
+    }
+}
+function switches () {
+    if (pins.digitalReadPin(DigitalPin.P2) == 1) {
+        keyboard.sendString("p")
+    }
+    if (pins.digitalReadPin(DigitalPin.P8) == 1) {
+        keyboard.sendString("s")
+    }
+}
+function encoder () {
+    if (pins.digitalReadPin(DigitalPin.P11) == 0) {
         if (pins.digitalReadPin(DigitalPin.P12) == 0) {
-            basic.showLeds(`
-                . . # . .
-                . # . . .
-                # # # # #
-                . # . . .
-                . . # . .
-                `)
             keyboard.sendString("q")
         } else {
-            basic.showLeds(`
-                . . # . .
-                . . . # .
-                # # # # #
-                . . . # .
-                . . # . .
-                `)
             keyboard.sendString("b")
         }
-        basic.pause(200)
-        basic.showLeds(`
-            . . . . .
-            . . . . .
-            . . . . .
-            . . . . .
-            . . . . .
-            `)
     }
+    if (pins.digitalReadPin(DigitalPin.P16) == 1) {
+        keyboard.sendString("e")
+    }
+}
+keyboard.startKeyboardService()
+basic.forever(function () {
+    encoder()
+    joystick()
+    switches()
 })
