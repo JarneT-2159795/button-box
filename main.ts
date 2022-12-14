@@ -4,6 +4,7 @@ function joystick () {
 }
 function switches () {
     if (pins.digitalReadPin(DigitalPin.P2) == 1) {
+        alreadySend = 1
         while (pins.digitalReadPin(DigitalPin.P2) == 1) {
             gamepad.send(
             gamepad._buttons(GameButton.A, true),
@@ -25,6 +26,7 @@ function switches () {
         )
     }
     if (pins.digitalReadPin(DigitalPin.P8) == 1) {
+        alreadySend = 1
         while (pins.digitalReadPin(DigitalPin.P8) == 1) {
             gamepad.send(
             gamepad._buttons(GameButton.B, true),
@@ -34,6 +36,7 @@ function switches () {
             z,
             rx
             )
+            joystick()
         }
         gamepad.send(
         gamepad._buttons(GameButton.B, false),
@@ -106,18 +109,23 @@ function encoder () {
     }
 }
 let rx = 0
+let alreadySend = 0
 let z = 0
 let y = 0
 gamepad.startGamepadService()
 basic.forever(function () {
     switches()
     joystick()
-    gamepad.send(
-    gamepad._buttons(GameButton.none, true),
-    input.rotation(Rotation.Pitch),
-    y,
-    gamepad._dpad(GameDirection.noDirection),
-    z,
-    rx
-    )
+    if (alreadySend == 0) {
+        gamepad.send(
+        gamepad._buttons(GameButton.none, true),
+        input.rotation(Rotation.Pitch),
+        y,
+        gamepad._dpad(GameDirection.noDirection),
+        z,
+        rx
+        )
+    } else {
+        alreadySend = 0
+    }
 })
