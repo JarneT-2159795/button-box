@@ -1,9 +1,8 @@
 function joystick () {
-    y = pins.analogReadPin(AnalogPin.P0) / 1023
-    z = pins.analogReadPin(AnalogPin.P1) / 1023
+    y = pins.analogReadPin(AnalogPin.P0) / 1023 * 255 - 127
+    z = pins.analogReadPin(AnalogPin.P1) / 1023 * 255 - 127
 }
 function switches () {
-    switches()
     if (pins.digitalReadPin(DigitalPin.P2) == 1) {
         while (pins.digitalReadPin(DigitalPin.P2) == 1) {
             gamepad.send(
@@ -14,6 +13,7 @@ function switches () {
             z,
             rx
             )
+            joystick()
         }
         gamepad.send(
         gamepad._buttons(GameButton.A, false),
@@ -110,6 +110,7 @@ let z = 0
 let y = 0
 gamepad.startGamepadService()
 basic.forever(function () {
+    switches()
     joystick()
     gamepad.send(
     gamepad._buttons(GameButton.none, true),
