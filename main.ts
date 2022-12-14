@@ -49,11 +49,18 @@ function switches () {
     }
 }
 function encoder () {
-    encoder()
-    if (pins.digitalReadPin(DigitalPin.P11) == 0) {
-        if (pins.digitalReadPin(DigitalPin.P12) == 0) {
+    if (pins.digitalReadPin(DigitalPin.P11) == 1) {
+        if (pins.digitalReadPin(DigitalPin.P12) == 1) {
             gamepad.send(
             gamepad._buttons(GameButton.leftShoulder, true),
+            input.rotation(Rotation.Pitch),
+            y,
+            gamepad._dpad(GameDirection.noDirection),
+            z,
+            rx
+            )
+            gamepad.send(
+            gamepad._buttons(GameButton.leftShoulder, false),
             input.rotation(Rotation.Pitch),
             y,
             gamepad._dpad(GameDirection.noDirection),
@@ -69,35 +76,28 @@ function encoder () {
             z,
             rx
             )
+            gamepad.send(
+            gamepad._buttons(GameButton.rightShoulder, false),
+            input.rotation(Rotation.Pitch),
+            y,
+            gamepad._dpad(GameDirection.noDirection),
+            z,
+            rx
+            )
         }
-    } else {
-        gamepad.send(
-        gamepad._buttons(GameButton.leftShoulder, false),
-        input.rotation(Rotation.Pitch),
-        y,
-        gamepad._dpad(GameDirection.noDirection),
-        z,
-        rx
-        )
-        gamepad.send(
-        gamepad._buttons(GameButton.rightShoulder, false),
-        input.rotation(Rotation.Pitch),
-        y,
-        gamepad._dpad(GameDirection.noDirection),
-        z,
-        rx
-        )
     }
     if (pins.digitalReadPin(DigitalPin.P16) == 1) {
-        gamepad.send(
-        gamepad._buttons(GameButton.leftStick, true),
-        input.rotation(Rotation.Pitch),
-        y,
-        gamepad._dpad(GameDirection.noDirection),
-        z,
-        rx
-        )
-    } else {
+        while (pins.digitalReadPin(DigitalPin.P16) == 1) {
+            gamepad.send(
+            gamepad._buttons(GameButton.leftStick, true),
+            input.rotation(Rotation.Pitch),
+            y,
+            gamepad._dpad(GameDirection.noDirection),
+            z,
+            rx
+            )
+            joystick()
+        }
         gamepad.send(
         gamepad._buttons(GameButton.leftStick, false),
         input.rotation(Rotation.Pitch),
@@ -116,6 +116,7 @@ gamepad.startGamepadService()
 basic.forever(function () {
     switches()
     joystick()
+    encoder()
     if (alreadySend == 0) {
         gamepad.send(
         gamepad._buttons(GameButton.none, true),
